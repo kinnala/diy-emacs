@@ -1,0 +1,99 @@
+#+TITLE: DIY reproducible Emacs
+
+* Introduction
+
+Fork this repository, open this file in Emacs, and follow the instructions to
+build yourself a reproducible Emacs configuration in 15 minutes!
+
+* How Emacs is configured?
+
+We configure Emacs using a file located at =~/.emacs.d/init.el=.  Instead of
+directly modifying =~/.emacs.d/init.el=, this document is "tangled" to create
+=~/.emacs.d/init.el=.
+
+This document can be tangled by opening the file in Emacs, moving the point to
+the following block and executing it by =C-c C-c=:
+#+begin_src elisp :results silent
+(org-babel-tangle)
+#+end_src
+It can also be done in the shell by running
+#+begin_src sh
+emacs --eval '(org-babel-tangle-file "readme.org")' --kill
+#+end_src
+
+Restarting Emacs will now enable the new configuration.
+
+* Package management
+
+If you restarted Emacs, you might've noticed that it took longer than usual.
+That's because several packages were installed by the package manager
+straight.el.  We use straight.el to achieve reproducibility.  In fact, you can
+transfer this file to a new computer and obtain an equivalent setup.
+
+The package manager is enabled in =init.el= by the following commands:
+#+begin_src elisp :mkdirp yes :tangle ~/.emacs.d/init.el
+(setq straight-use-package-by-default t)
+(setq straight-vc-git-default-clone-depth 1)
+(defvar bootstrap-version)
+(let* ((straight-repo-dir
+        (expand-file-name "straight/repos" user-emacs-directory))
+       (bootstrap-file
+        (concat straight-repo-dir "/straight.el/bootstrap.el"))
+       (bootstrap-version 5))
+  (unless (file-exists-p bootstrap-file)
+    (shell-command
+     (concat
+      "mkdir -p " straight-repo-dir " && "
+      "git -C " straight-repo-dir " clone "
+      "https://github.com/raxod502/straight.el.git && "
+      "git -C " straight-repo-dir " checkout 2d407bc")))
+  (load bootstrap-file nil 'nomessage))
+(straight-use-package 'use-package)
+#+end_src
+
+Notice how this installs straight.el using Git if it doesn't exist under
+=~/.emacs.d=.
+
+* Adding packages
+
+Before adding new packages to =init.el=, you might want to try them at first.
+In straight.el, there is a convenient interactive command =M-x
+straight-use-package= which asks for a package name to install.  Restarting
+Emacs will remove any temporary packages.
+
+A package can be installed permanently by adding it to the following block:
+#+begin_src elisp :mkdirp yes :tangle ~/.emacs.d/init.el
+;; install and enable ivy
+(use-package ivy
+  :commands ivy-mode
+  :init (ivy-mode 1))
+
+;; install Magit and bind it to <C-x g>
+(use-package magit
+  :bind (("C-x g" . magit-status)))
+#+end_src
+Each =use-package= call will correspond to a package, e.g., the first call will
+install =ivy= (and its dependencies) and run the command =(ivy-mode 1)= during
+initialization.
+
+* Fixing package versions
+
+Finally, to get a reproducible setup, you should fix the package versions.
+After starting Emacs, you can run =M-x straight-freeze-versions= to write the
+file =~/.emacs.d/straight/versions/default.el=.  Copy its contents to the
+following block to fix the package and dependency versions:
+#+begin_src elisp :mkdirp yes :tangle ~/.emacs.d/straight/versions/default.el
+(("dash.el" . "0517ab1ed18fd3af3c6131ca9e3a6e915036f809")
+ ("emacs-async" . "14f48de586b0977e3470f053b810d77b07ea427a")
+ ("emacsmirror-mirror" . "73d68771488284cceb42f70fda551e0a516cb249")
+ ("gnu-elpa-mirror" . "fcb3cf5ba5f16885f7851885c954222aee6f03ab")
+ ("magit" . "3c4259e3e090d8575a6bcf80ad53a393bb16b05f")
+ ("melpa" . "3b8b731674a5c5d4f83d998258a5d4c9aabb2048")
+ ("straight.el" . "2d407bccd9378f1d5218f8ba2ae85c6be73fbaf1")
+ ("swiper" . "d2891aab7b816aebf21ebd01ce33933a6ac6244f")
+ ("transient" . "4a2b7fdf75c6940b5b311d930ea26f7e85a08cd4")
+ ("use-package" . "caa92f1d64fc25480551757d854b4b49981dfa6b")
+ ("with-editor" . "6735180e73e787b79535c245b162249b70dbf841"))
+:beta
+#+end_src
+The above block gets tangled to =~/.emacs.d/straight/versions/default.el=.
