@@ -18,7 +18,7 @@ the following block and executing it by =C-c C-c=:
 #+end_src
 It can also be done in the shell by running
 #+begin_src sh
-emacs --eval '(org-babel-tangle-file "readme.org")' --kill
+emacs --eval '(org-mode 1) (org-babel-tangle-file "readme.org")' --kill
 #+end_src
 
 Restarting Emacs will now enable the new configuration.
