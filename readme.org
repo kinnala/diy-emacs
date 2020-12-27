@@ -5,6 +5,11 @@
 Fork this repository, open this file in Emacs, and follow the instructions to
 build yourself a reproducible Emacs configuration in 15 minutes!
 
+/Hint: You can try this in Docker using/
+#+begin_src sh
+docker run -it nixos/nix nix-shell -p emacs-nox git
+#+end_src
+
 * How Emacs is configured?
 
 We configure Emacs using a file located at =~/.emacs.d/init.el=.  Instead of
