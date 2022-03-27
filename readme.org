@@ -9,7 +9,7 @@ build yourself a reproducible Emacs configuration in 15 minutes!
 #+begin_src sh
 docker run -it nixos/nix nix-shell -p emacs-nox git
 #+end_src
-/After this you would clone this repository and open this file in Emacs./
+/After the container has started you can clone this repository and open this file in Emacs./
 
 * How Emacs is configured?
 
@@ -111,5 +111,5 @@ following block to fix the package and dependency versions:
 #+end_src
 The above block gets tangled to =~/.emacs.d/straight/versions/default.el=.
 
-/Hint: If you want to update packages, you can use/ =straight-pull-package=
+/Hint: If you want to update packages, you can use/ =straight-pull-package=, =straight-rebuild-package=,
 /and then redo the steps above./
