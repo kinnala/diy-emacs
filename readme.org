@@ -2,40 +2,46 @@
 
 * Introduction
 
-Fork this repository, open this file in Emacs, and follow the instructions to
+Clone this repository, open this file in Emacs, and follow the instructions to
 build yourself a reproducible Emacs configuration in 15 minutes!
 
 /Hint: You can try this in Docker using/
 #+begin_src sh
 docker run -it nixos/nix nix-shell -p emacs-nox git
 #+end_src
+/After this you would run =git clone https://github.com/kinnala/diy-emacs.git=,
+=cd diy-emacs=, =emacs readme.org= and continue with the tutorial./
 
 * How Emacs is configured?
 
-We configure Emacs using a file located at =~/.emacs.d/init.el=.  Instead of
-directly modifying =~/.emacs.d/init.el=, this document is "tangled" to create
+Usually we configure Emacs by modifying a file located at =~/.emacs.d/init.el=.
+Here, instead of directly modifying =~/.emacs.d/init.el=, we "tangle" this
+document which means that all code is extracted and written to
 =~/.emacs.d/init.el=.
 
-This document can be tangled by opening the file in Emacs, moving the point to
-the following block and executing it by =C-c C-c=:
+This document is tangled by opening it in Emacs, moving the point over the
+following block and pressing =C-c C-c=:
 #+begin_src elisp :results silent
 (org-babel-tangle)
 #+end_src
-It can also be done in the shell by running
+Alternatively, you can write =M-x org-babel-tangle= or use the
+default shortcut =C-c C-v t=.
+Tangling can also be done directly from the shell by running
 #+begin_src sh
 emacs --eval '(org-mode 1) (org-babel-tangle-file "readme.org")' --kill
 #+end_src
 
-Restarting Emacs will now enable the new configuration.
+Restarting Emacs (=M-x kill-emacs= & =emacs=) will now enable the new
+configuration.
 
 * Package management
 
-If you restarted Emacs, you might've noticed that it took longer than usual.
+After you restarted Emacs, you might've noticed that it took longer than usual.
 That's because several packages were installed by the package manager
 straight.el.  We use straight.el to achieve reproducibility.  In fact, you can
 transfer this file to a new computer and obtain an equivalent setup.
 
-The package manager is enabled in =init.el= by the following commands:
+The package manager is enabled in =init.el= via the following commands:
 #+begin_src elisp :mkdirp yes :tangle ~/.emacs.d/init.el
 (setq straight-use-package-by-default t)
 (setq straight-vc-git-default-clone-depth 1)
@@ -59,12 +65,15 @@ The package manager is enabled in =init.el= by the following commands:
 Notice how this installs straight.el using Git if it doesn't exist under
 =~/.emacs.d=.
 
+/Hint: If you want to upgrade straight.el, you can use a different commit ID
+above./
+
 * Adding packages
 
-Before adding new packages to =init.el=, you might want to try them at first.
-In straight.el, there is a convenient interactive command =M-x
-straight-use-package= which asks for a package name to install.  Restarting
-Emacs will remove any temporary packages.
+Before adding new packages to =init.el=, you might want to try them out at
+first.  In straight.el, there is a convenient interactive command =M-x
+straight-use-package= which asks for a package name to install.
+Removing any temporary packages is done by restarting Emacs.
 
 A package can be installed permanently by adding it to the following block:
 #+begin_src elisp :mkdirp yes :tangle ~/.emacs.d/init.el
@@ -83,7 +92,7 @@ initialization.
 
 * Fixing package versions
 
-Finally, to get a reproducible setup, you should fix the package versions.
+Finally, to get a reproducible setup, you need to fix the package versions.
 After starting Emacs, you can run =M-x straight-freeze-versions= to write the
 file =~/.emacs.d/straight/versions/default.el=.  Copy its contents to the
 following block to fix the package and dependency versions:
